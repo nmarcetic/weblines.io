@@ -1,0 +1,14 @@
+# ignore source related stuff
+*.pyc
+
+# ignore logs
+logs/*
+!logs/.gitkeep
+
+# ignore uploads
+uploads/*
+!uploads/.gitkeep
+
+# ignore static files
+static/*
+!static/.gitkeep
