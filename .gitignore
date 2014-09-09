@@ -1,5 +1,7 @@
 # ignore source related stuff
 *.pyc
+**/*/migrations
+*.db
 
 # ignore logs
 logs/*
