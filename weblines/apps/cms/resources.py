@@ -14,6 +14,7 @@ class Page(serializers.ModelSerializer):
 
         # add serializer fields
         self.fields['galleries'] = Gallery(many=True)
+        self.fields['links'] = Link(many=True)
 
     class Meta:
         model = models.Page
@@ -27,6 +28,7 @@ class GalleryItem(serializers.ModelSerializer):
     # TODO: create image property
     class Meta:
         model = models.GalleryItem
+        exclude = ('gallery',)
 
 
 class Gallery(serializers.ModelSerializer):
@@ -35,5 +37,21 @@ class Gallery(serializers.ModelSerializer):
     """
     items = GalleryItem(many=True)
 
+    def transform_display_type(self, obj, value):
+        """
+        Use code as display type representation
+        """
+        return obj.display_type.code
+
     class Meta:
         model = models.Gallery
+        exclude = ('id', 'page',)
+
+
+class Link(serializers.ModelSerializer):
+    """
+    Represents Link resource
+    """
+    class Meta:
+        model = models.Link
+        exclude = ('id', 'page',)

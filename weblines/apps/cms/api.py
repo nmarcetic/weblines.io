@@ -1,5 +1,5 @@
 """
-Content-management API
+REST API specification
 """
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -26,4 +26,4 @@ class PagesAPI(viewsets.ModelViewSet):
         """
         page = get_object_or_404(models.Page, slug=slug)
         response_data = resources.Page(page)
-        return Response(response_data, status=status.HTTP_200_OK)
+        return Response(response_data.data, status=status.HTTP_200_OK)

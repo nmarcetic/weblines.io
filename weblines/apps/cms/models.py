@@ -136,6 +136,9 @@ class GalleryItem(models.Model):
     # instance owner
     gallery = models.ForeignKey(Gallery, related_name='items')
 
+    def __unicode__(self):
+        return self.slug
+
     def set_image(self, image):
         """
         Method sets item image
@@ -166,3 +169,14 @@ class Link(Section):
 
     # instance owner
     page = models.ForeignKey(Page, related_name='links')
+
+    def save(self, *args, **kwargs):
+        """
+        Persists Link instance and initializes its ordering
+        """
+        super(Link, self).save(*args, **kwargs)
+
+        # update ordering
+        if self.ordering == 0:
+            self.ordering = self.id
+            self.save(update_fields=['ordering'])

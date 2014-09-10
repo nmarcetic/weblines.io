@@ -12,12 +12,27 @@ class DisplayType(admin.ModelAdmin):
     list_display = ('name', 'code')
 
 
-class GalleryInline(admin.StackedInline):
+class GalleryItem(admin.StackedInline):
     """
-    Gallery model customizations
+    GalleryItem model customizations
     """
-    model = models.Gallery
+    model = models.GalleryItem
     exclude = ('slug',)
+    extra = 0
+
+
+class Gallery(admin.ModelAdmin):
+    """
+    Gallery model customization
+    """
+    inlines = [GalleryItem, ]
+
+
+class Link(admin.StackedInline):
+    """
+    Link model customization
+    """
+    model = models.Link
     extra = 0
 
 
@@ -25,12 +40,12 @@ class Page(admin.ModelAdmin):
     """
     Page model customisations
     """
-    inlines = [GalleryInline, ]
+    inlines = [Link, ]
     exclude = ('slug',)
-
     list_display = ('title', 'slug')
 
 
 # register customized models
 admin.site.register(models.Page, Page)
 admin.site.register(models.DisplayType, DisplayType)
+admin.site.register(models.Gallery, Gallery)
