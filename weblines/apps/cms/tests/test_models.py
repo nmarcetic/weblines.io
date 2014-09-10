@@ -1,5 +1,5 @@
 """
-Content-management app test suites
+Domain objects test suites
 """
 from django.db import IntegrityError
 from django.test import TestCase
@@ -41,7 +41,17 @@ class GalleryTestCase(TestCase):
         """
         Creates dummy gallery
         """
-        self.gallery = models.Gallery.objects.create(name='slider')
+        # create owner page
+        page = models.Page.objects.create(title='first page')
+
+        # create new display type
+        display_type = models.DisplayType.objects.create(name='gallery',
+                                                         code='G')
+
+        # instantiate gallery and bind it to a created display type
+        self.gallery = models.Gallery.objects.create(name='slider',
+                                                     page=page,
+                                                     display_type=display_type)
 
     def test_item_addition(self):
         """
@@ -49,7 +59,13 @@ class GalleryTestCase(TestCase):
         """
         self.gallery.add_item('gallery-item')
         self.assertEqual(1, self.gallery.items.count())
-        self.assertEqual('gallery-item', self.gallery.items.first().name)
+        self.assertEqual('gallery-item', self.gallery.items.first().caption)
+
+        # in case of same captions, slugs must remain unique
+        self.gallery.add_item('gallery-item')
+        first = self.gallery.items.first()
+        last = self.gallery.items.last()
+        self.assertNotEqual(first.slug, last.slug)
 
     def test_item_removal(self):
         """
@@ -58,16 +74,16 @@ class GalleryTestCase(TestCase):
         Gallery item is removed if its name is found in added items.
         """
         self.test_item_addition()
-        self.assertEqual(1, self.gallery.items.count())
+        self.assertEqual(2, self.gallery.items.count())
 
         # failed search should result with False
         return_value = self.gallery.remove_item('invalid-item')
         self.assertEqual(False, return_value)
 
         # successful search should remove item and return True
-        return_value = self.gallery.remove_item('gallery-item')
+        return_value = self.gallery.remove_item('gallery-item-1')
         self.assertEqual(True, return_value)
-        self.assertEqual(0, self.gallery.items.count())
+        self.assertEqual(1, self.gallery.items.count())
 
         # slide should be completely removed from system
-        self.assertEqual(0, models.GalleryItem.objects.count())
+        self.assertEqual(1, models.GalleryItem.objects.count())
